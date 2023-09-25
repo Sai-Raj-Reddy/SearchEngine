@@ -130,6 +130,8 @@ venv.bak/
 
 
 # TestingDocuments/
+JSON_docs/
+
 
 # Spyder project settings
 .spyderproject

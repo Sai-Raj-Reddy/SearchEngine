@@ -26,13 +26,15 @@ class PositionalInvertedIndex(Index):
                     p.add_position(position)
                     self.PositionalIndex[term].append(p)
                     
-            # if term=='hello':
+            # if term=='explor':
             #     print(self.PositionalIndex[term])
             #     for p in self.PositionalIndex[term]:
             #         print(p.doc_id)
             #         print(p.positions)
     
     def get_postings(self, term: str) -> Iterable[Posting]:
+        # print("in get postings")
+        # print(term)
         if term in self.PositionalIndex:
             # ans=[]
             # # print(self.PositionalIndex[term])

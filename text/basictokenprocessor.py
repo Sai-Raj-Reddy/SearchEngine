@@ -10,13 +10,8 @@ class BasicTokenProcessor(TokenProcessor):
     Stemmer=Porter2Stemmer()
     def process_token(self, token : str):
         # token=re.sub(self.whitespace_re, "", token)
-        # print(token)
         if '-' in token:
             split_tokens=[]
-            
-            # split_tokens=re.split(r'-',token) # Splitting the tokens removing hyphen
-            # split_tokens.append(re.sub(r'-','',token)) # Appending the whole string after removing hyphen
-            # print(str(''.join(token.split('-'))))
             complete_str=""
             for i in token.split('-'):
                 complete_str+=i
@@ -27,10 +22,7 @@ class BasicTokenProcessor(TokenProcessor):
             
         else:
             split_tokens=[token]
-        # split_tokens=[re.sub(r'^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$','',s) for s in split_tokens if s!=''] # removing non alpha numeric from  beginning and ending and s!='' to remove empty strings for double hyphen words
         non_alphanumeric=[]
-        # flag=False
-        # print(split_tokens)
         for s in split_tokens:
             if s!='':
                 i=0
@@ -49,12 +41,18 @@ class BasicTokenProcessor(TokenProcessor):
                         j-=1
                 if not i>=len(s) and not j<0:
                     non_alphanumeric.append(s[i:j+1].lower())
-        for s in non_alphanumeric:
-            s.replace("\'","")
-            s.replace("\"","")
-        # split_tokens_final=[re.sub(r'\'|"','',s.lower()) for s in split_tokens]
-        return non_alphanumeric
-        # return [self.normalize(token) for token in non_alphanumeric]
+        
+        final_tokens=[]
+        for i in non_alphanumeric:
+            s=''
+            for j in i:
+                if j=='\'' or j=='"':
+                    continue
+                else:
+                    s+=j
+            final_tokens.append(s)
+        # print([self.normalize(token) for token in non_alphanumeric])
+        return [self.normalize(token) for token in final_tokens]
     
     def normalize(self,token: str):
         # return self.Stemmer.ste

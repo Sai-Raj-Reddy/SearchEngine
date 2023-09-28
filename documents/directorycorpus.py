@@ -29,8 +29,10 @@ class DirectoryCorpus:
         self._documents = None
 
     def documents(self) -> Iterable[Document]:
+        # print("in documents directory corpus")
         if self._documents is None:
             self._documents = self._read_documents()
+        # print("Exiting directory corpus")
         return self._documents.values()
 
     def __iter__(self) -> Iterator[Document]:
@@ -48,10 +50,12 @@ class DirectoryCorpus:
         files = list(Path(self.corpus_path).glob("*"))
         results = {}
         next_id = 0
+        print("Files count ",len(files))
         for f in files:
             if f.suffix in self.factories and self.file_filter(f):
                 results[next_id] = self.factories[f.suffix](f, next_id)
                 next_id += 1
+        # print("Exiting read documents")
         return results
 
     @staticmethod

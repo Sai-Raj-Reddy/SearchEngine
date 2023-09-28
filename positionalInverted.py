@@ -10,12 +10,15 @@ from querying import BooleanQueryParser
 the same directory as this file."""
 
 def index_corpus(corpus : DocumentCorpus) -> Index:
-    # print("Testing")
     token_processor = BasicTokenProcessor()
     PositionalInvertedIndex=positionalinvertedindex.PositionalInvertedIndex()
     doc_count=1
+    test=1
     for d in corpus:
-        # print("Testing")
+        # print(doc_count,end=" ")
+        if doc_count%1000==0:
+            print(test)
+            test+=1
         # print("Index_docs ",doc_count)
         # print(f"Found document {d.title}")
         # start_time = time.time()
@@ -34,6 +37,7 @@ def index_corpus(corpus : DocumentCorpus) -> Index:
         # print("--- %s seconds for process token  ---" % (time.time() - start_time))
         doc_count+=1
         # break
+        
     # print("Index_docs ",doc_count)
 
     return PositionalInvertedIndex
@@ -44,27 +48,30 @@ if __name__ == "__main__":
     start_time = time.time()
     # JSON_FewDocuments
     # JSON_Testing2
-    corpus_path = Path('TestingDocuments\JSON_FewDocuments')
+    corpus_path = Path('TestingDocuments\JSON')
     d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
     # corpus_path = Path('TestingDocuments\MobyDick10Chapters')
     # d = DirectoryCorpus.load_text_directory(corpus_path, ".txt")
     print("--- %s seconds for directory load  ---" % (time.time() - start_time))
     # Build the index over this directory.
     start_time = time.time()
-    # print("Testing")
     index = index_corpus(d)
     # print(index.get_postings("photo"))
     print("--- %s seconds for index corpus ---" % (time.time() - start_time))
     boolean_query=BooleanQueryParser()
     # query="\"Sand Creek Massacr Nation Histor Site Brochur\""
-    query="\"photo gallery\" + learn and requiring"
+    # query="\"photo galleri\" + learn requir"
+    query="explor"
+    start_time = time.time()
     result=boolean_query.parse_query(query.lower())
     result=result.get_postings(index)
     if len(result)==0:
         print("The given text is not found in any documents")
-    for i in result:
-        print(d.get_document(i.doc_id))
-        print(i.positions)
+    print(len(result))
+    print("--- %s seconds for Search  ---" % (time.time() - start_time))
+    # for i in result:
+        # print(d.get_document(i.doc_id).title)
+        # print(i.positions)
     # while(True):
     #     query=input("Enter the single term word(lower case) to search or 'q!' to quit the application\n")
     #     start_time = time.time()

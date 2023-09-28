@@ -39,20 +39,27 @@ class BasicTokenProcessor(TokenProcessor):
                         break
                     else:
                         j-=1
-                if not i>=len(s) and not j<0:
-                    non_alphanumeric.append(s[i:j+1].lower())
+                st=''
+                for k in range(i,j+1):
+                    if s[k]=='\'' or s[k]=='"':
+                        continue
+                    else:
+                        st+=s[k]
+                non_alphanumeric.append(st.lower())
+                # if not i>=len(s) and not j<0:
+                #     non_alphanumeric.append(s[i:j+1].lower())
         
-        final_tokens=[]
-        for i in non_alphanumeric:
-            s=''
-            for j in i:
-                if j=='\'' or j=='"':
-                    continue
-                else:
-                    s+=j
-            final_tokens.append(s)
+        # final_tokens=[]
+        # for i in non_alphanumeric:
+        #     s=''
+        #     for j in i:
+        #         if j=='\'' or j=='"':
+        #             continue
+        #         else:
+        #             s+=j
+        #     final_tokens.append(s)
         # print([self.normalize(token) for token in non_alphanumeric])
-        return [self.normalize(token) for token in final_tokens]
+        return [self.normalize(token) for token in non_alphanumeric]
     
     def normalize(self,token: str):
         # return self.Stemmer.ste

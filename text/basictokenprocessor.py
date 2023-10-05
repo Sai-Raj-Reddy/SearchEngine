@@ -9,7 +9,9 @@ class BasicTokenProcessor(TokenProcessor):
     whitespace_re = re.compile(r"\W+")
     Stemmer=Porter2Stemmer()
     def process_token(self, token : str):
-        # token=re.sub(self.whitespace_re, "", token)
+        # return [token]
+        # # token=re.sub(self.whitespace_re, "", token)
+        # split_tokens=[token]
         if '-' in token:
             split_tokens=[]
             complete_str=""
@@ -22,6 +24,7 @@ class BasicTokenProcessor(TokenProcessor):
             
         else:
             split_tokens=[token]
+        
         non_alphanumeric=[]
         for s in split_tokens:
             if s!='':
@@ -46,6 +49,7 @@ class BasicTokenProcessor(TokenProcessor):
                     else:
                         st+=s[k]
                 non_alphanumeric.append(st.lower())
+                # non_alphanumeric.append(s[i:j+1])
                 # if not i>=len(s) and not j<0:
                 #     non_alphanumeric.append(s[i:j+1].lower())
         
@@ -59,6 +63,7 @@ class BasicTokenProcessor(TokenProcessor):
         #             s+=j
         #     final_tokens.append(s)
         # print([self.normalize(token) for token in non_alphanumeric])
+        return non_alphanumeric
         return [self.normalize(token) for token in non_alphanumeric]
     
     def normalize(self,token: str):

@@ -55,7 +55,7 @@ class DirectoryCorpus:
             if f.suffix in self.factories and self.file_filter(f):
                 results[next_id] = self.factories[f.suffix](f, next_id)
                 next_id += 1
-        # print("Exiting read documents")
+        print("Exiting read documents")
         return results
 
     @staticmethod

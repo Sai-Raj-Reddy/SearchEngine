@@ -6,8 +6,7 @@ import re
 import time
 from querying import BooleanQueryParser
 
-"""This basic program builds a term-document matrix over the .txt files in 
-the same directory as this file."""
+
 
 def index_corpus(corpus : DocumentCorpus) -> Index:
     token_processor = BasicTokenProcessor()
@@ -22,6 +21,8 @@ def index_corpus(corpus : DocumentCorpus) -> Index:
         # print("Index_docs ",doc_count)
         # print(f"Found document {d.title}")
         # start_time = time.time()
+        # print(type(d.get_content()))
+        # break
         english_token_stream=englishtokenstream.EnglishTokenStream(d.get_content())
         # print("--- %s seconds for EnglishToken stream  ---" % (time.time() - start_time))
         # print(d.get_content())
@@ -61,10 +62,15 @@ if __name__ == "__main__":
     boolean_query=BooleanQueryParser()
     # query="\"Sand Creek Massacr Nation Histor Site Brochur\""
     # query="\"photo galleri\" + learn requir"
-    query="explor"
+    query="explore"
     start_time = time.time()
     result=boolean_query.parse_query(query.lower())
     result=result.get_postings(index)
+    for i in result:
+        print(d.get_document(i.doc_id).title) # For opening docs in the get_content
+        # print(d.get_document(i.doc_id))
+        print(i.positions)
+        break
     if len(result)==0:
         print("The given text is not found in any documents")
     print(len(result))

@@ -49,7 +49,7 @@ if __name__ == "__main__":
     start_time = time.time()
     # JSON_FewDocuments
     # JSON_Testing2
-    corpus_path = Path('TestingDocuments\JSON')
+    corpus_path = Path('TestingDocuments\JSON_FewDocuments')
     d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
     # corpus_path = Path('TestingDocuments\MobyDick10Chapters')
     # d = DirectoryCorpus.load_text_directory(corpus_path, ".txt")
@@ -62,15 +62,15 @@ if __name__ == "__main__":
     boolean_query=BooleanQueryParser()
     # query="\"Sand Creek Massacr Nation Histor Site Brochur\""
     # query="\"photo galleri\" + learn requir"
-    query="explore"
+    query="Site + Identification"
     start_time = time.time()
     result=boolean_query.parse_query(query.lower())
     result=result.get_postings(index)
     for i in result:
-        print(d.get_document(i.doc_id).title) # For opening docs in the get_content
-        # print(d.get_document(i.doc_id))
+        # print(d.get_document(i.doc_id).title) # For opening docs in the get_content
+        print(d.get_document(i.doc_id))
         print(i.positions)
-        break
+        # break
     if len(result)==0:
         print("The given text is not found in any documents")
     print(len(result))

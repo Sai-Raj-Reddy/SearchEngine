@@ -5,7 +5,6 @@ from .document import Document
 import json
 
 
-import pandas as pd
 import random
 import string
 

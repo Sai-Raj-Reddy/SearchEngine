@@ -4,10 +4,13 @@ from indexing import Index, Posting
 from querying import querycomponent 
 
 class OrQuery(QueryComponent):
-    def __init__(self, components : list[QueryComponent]):
+    # def __init__(self, components : list[QueryComponent]):
+    def __init__(self, components : [QueryComponent]):
         self.components = components
 
-    def get_postings(self, index : Index) -> list[Posting]:
+
+    # def get_postings(self, index : Index) -> list[Posting]:
+    def get_postings(self, index : Index) -> [Posting]:
         # TODO: program the merge for an AndQuery, by gathering the postings of the composed QueryComponents and
 		# intersecting the resulting postings.
         # print(self.components)

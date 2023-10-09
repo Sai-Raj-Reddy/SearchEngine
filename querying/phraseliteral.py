@@ -6,10 +6,13 @@ class PhraseLiteral(QueryComponent):
     Represents a phrase literal consisting of one or more terms that must occur in sequence.
     """
 
-    def __init__(self, terms : list[QueryComponent]):
+    # def __init__(self, terms : list[QueryComponent]):
+    def __init__(self, terms : [QueryComponent]):
         self.literals = terms
 
-    def get_postings(self, index) -> list[Posting]:
+
+    # def get_postings(self, index) -> list[Posting]:
+    def get_postings(self, index) -> [Posting]:
         # TODO: program this method. Retrieve the postings for the individual literals in the phrase,
 		# and positional merge them together.
         distance=1

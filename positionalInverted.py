@@ -7,6 +7,9 @@ import time
 from querying import BooleanQueryParser
 
 
+import pickle
+
+
 
 def index_corpus(corpus : DocumentCorpus) -> Index:
     token_processor = BasicTokenProcessor()
@@ -43,37 +46,58 @@ def index_corpus(corpus : DocumentCorpus) -> Index:
 
     return PositionalInvertedIndex
 
-    
+def serialize_index(index,d):
+    serialized_index = pickle.dumps(index)
+    serialized_corpus=pickle.dumps(d)
+    with open('BinaryFiles/index.bin', 'wb') as file:
+        file.write(serialized_index)
+    with open('BinaryFiles/document_corpus.bin', 'wb') as file:
+        file.write(serialized_corpus)
+
 
 if __name__ == "__main__":
-    start_time = time.time()
-    # JSON_FewDocuments
-    # JSON_Testing2
-    corpus_path = Path('TestingDocuments\JSON_FewDocuments')
-    d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
-    # corpus_path = Path('TestingDocuments\MobyDick10Chapters')
-    # d = DirectoryCorpus.load_text_directory(corpus_path, ".txt")
-    print("--- %s seconds for directory load  ---" % (time.time() - start_time))
-    # Build the index over this directory.
-    start_time = time.time()
-    index = index_corpus(d)
-    # print(index.get_postings("photo"))
-    print("--- %s seconds for index corpus ---" % (time.time() - start_time))
+    try:
+        with open('BinaryFiles/index.bin', 'rb') as file:
+            serialized_index = file.read()
+            index = pickle.loads(serialized_index)
+        with open('BinaryFiles/document_corpus.bin', 'rb') as file:
+            serialized_index = file.read()
+            d = pickle.loads(serialized_index)
+        print("loaded from files")
+        
+    except FileNotFoundError:
+        print("File Not Found")
+        start_time = time.time()
+        # JSON_FewDocuments
+        # JSON_Testing2
+        corpus_path = Path('TestingDocuments\JSON_FewDocuments')
+        d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
+        # corpus_path = Path('TestingDocuments\MobyDick10Chapters')
+        # d = DirectoryCorpus.load_text_directory(corpus_path, ".txt")
+        print("--- %s seconds for directory load  ---" % (time.time() - start_time))
+        # Build the index over this directory.
+        start_time = time.time()
+        index = index_corpus(d)
+        serialize_index(index,d)
+        # serialize_index(d)
+        # print(index.get_postings("photo"))
+        print("--- %s seconds for index corpus ---" % (time.time() - start_time))
     boolean_query=BooleanQueryParser()
     # query="\"Sand Creek Massacr Nation Histor Site Brochur\""
     # query="\"photo galleri\" + learn requir"
-    query="Site + Identification"
+    query="park -science"
     start_time = time.time()
     result=boolean_query.parse_query(query.lower())
     result=result.get_postings(index)
     for i in result:
         # print(d.get_document(i.doc_id).title) # For opening docs in the get_content
         print(d.get_document(i.doc_id))
+        # print(i.doc_id)
         print(i.positions)
-        # break
+        break
     if len(result)==0:
         print("The given text is not found in any documents")
-    print(len(result))
+    print("No. of documents ",len(result))
     print("--- %s seconds for Search  ---" % (time.time() - start_time))
     # for i in result:
         # print(d.get_document(i.doc_id).title)

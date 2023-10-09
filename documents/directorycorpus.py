@@ -8,6 +8,9 @@ from . import textfiledocument
 from . import jsonfiledocument
 from pathlib import Path
 
+# def json_file_filter(file_path):
+#     return file_path.suffix==".json"
+
 class DirectoryCorpus:
     """A DirectoryCorpus represents a corpus found in a single directory on a local file system."""
     
@@ -25,6 +28,7 @@ class DirectoryCorpus:
         """
         self.corpus_path = abs_path
         self.file_filter = file_filter
+        # self.file_filter = json_file_filter
         self.factories = factories
         self._documents = None
 

@@ -54,6 +54,8 @@ class PositionalInvertedIndex(Index):
     def get_postings(self, term: str) -> Iterable[Posting]:
         # print("in get postings")
         # print(term)
+        if term[0]=='-':
+            term=term[1:]
         if term in self.PositionalIndex:
             return self.PositionalIndex[term]
             # return [Posting(doc_id) for doc_id in self.PositionalIndex[term]]

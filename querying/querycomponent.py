@@ -8,8 +8,15 @@ class QueryComponent(ABC):
     """
 
     @abstractmethod
-    def get_postings(self, index) -> list[Posting]:
+    def get_postings(self, index) -> [Posting]:
         """
         Retrieves a list of postings for the query component, using an Index as the source.
         """
         pass
+
+    # @abstractmethod
+    # def get_postings(self, index) -> list[Posting]:
+    #     """
+    #     Retrieves a list of postings for the query component, using an Index as the source.
+    #     """
+    #     pass

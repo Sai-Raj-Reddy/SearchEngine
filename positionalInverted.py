@@ -49,9 +49,9 @@ def index_corpus(corpus : DocumentCorpus) -> Index:
 def serialize_index(index,d):
     serialized_index = pickle.dumps(index)
     serialized_corpus=pickle.dumps(d)
-    with open('BinaryFiles/index.bin', 'wb') as file:
+    with open('BinaryFiles/index_JSON_stemmed.bin', 'wb') as file:
         file.write(serialized_index)
-    with open('BinaryFiles/document_corpus.bin', 'wb') as file:
+    with open('BinaryFiles/document_corpus_JSON_stemmed.bin', 'wb') as file:
         file.write(serialized_corpus)
 
 
@@ -60,10 +60,10 @@ if __name__ == "__main__":
     # d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
 
     try:
-        with open('BinaryFiles/index.bin', 'rb') as file:
+        with open('BinaryFiles/index_JSON_stemmed.bin', 'rb') as file:
             serialized_index = file.read()
             index = pickle.loads(serialized_index)
-        with open('BinaryFiles/document_corpus.bin', 'rb') as file:
+        with open('BinaryFiles/document_corpus_JSON_stemmed.bin', 'rb') as file:
             serialized_index = file.read()
             d = pickle.loads(serialized_index)
         print("loaded from files")
@@ -73,7 +73,7 @@ if __name__ == "__main__":
         start_time = time.time()
         # JSON_FewDocuments
         # JSON_Testing2
-        corpus_path = Path('TestingDocuments\JSON_FewDocuments')
+        corpus_path = Path('TestingDocuments\JSON')
         d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
         # corpus_path = Path('TestingDocuments\MobyDick10Chapters')
         # d = DirectoryCorpus.load_text_directory(corpus_path, ".txt")
@@ -81,7 +81,7 @@ if __name__ == "__main__":
         # Build the index over this directory.
         start_time = time.time()
         index = index_corpus(d)
-        # serialize_index(index,d)
+        serialize_index(index,d)
         # serialize_index(d)
         # print(index.get_postings("photo"))
         print("--- %s seconds for index corpus ---" % (time.time() - start_time))
@@ -114,14 +114,14 @@ if __name__ == "__main__":
         if query=="q!":
             break
         else:
-            result=boolean_query.parse_query(query.lower())
+            result=boolean_query.parse_query(query)
             result=result.get_postings(index)
             if len(result)==0:
                 print("The given text is not found in any documents")
-            else:
-                print("No. of documents ",len(result))
+                continue
             for i in result:
                 print(d.get_document(i.doc_id))
                 print(i.positions)
-            
+                # break
+            print("No. of documents ",len(result))
         print("--- %s seconds for searching ---" % (time.time() - start_time))

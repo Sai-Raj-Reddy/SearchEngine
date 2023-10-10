@@ -1,12 +1,16 @@
 from typing import Iterable
 from .postings import Posting
 from .index import Index
+from text import basictokenprocessor
+
+# from porter2stemmer import Porter2Stemmer
 
 class PositionalInvertedIndex(Index):
     def __init__(self):
         # self.vocabulary=set()
         self.PositionalIndex={}
-    
+        # self.Stemmer=Porter2Stemmer()
+        self.p=basictokenprocessor.BasicTokenProcessor()
     # def add_Term(self,terms: list,doc_id:int,position:int):
     #     for term in terms:
     #         if term not in self.PositionalIndex:
@@ -56,6 +60,8 @@ class PositionalInvertedIndex(Index):
         # print(term)
         # if term[0]=='-':
         #     term=term[1:]
+        # term=self.Stemmer.stem(term)
+        term=self.p.process_token(term)[0]
         if term in self.PositionalIndex:
             return self.PositionalIndex[term]
             # return [Posting(doc_id) for doc_id in self.PositionalIndex[term]]

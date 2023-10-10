@@ -63,7 +63,7 @@ class BasicTokenProcessor(TokenProcessor):
         #             s+=j
         #     final_tokens.append(s)
         # print([self.normalize(token) for token in non_alphanumeric])
-        return non_alphanumeric
+        # return non_alphanumeric
         return [self.normalize(token) for token in non_alphanumeric]
     
     def normalize(self,token: str):

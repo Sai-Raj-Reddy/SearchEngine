@@ -56,8 +56,8 @@ def serialize_index(index,d):
 
 
 if __name__ == "__main__":
-    corpus_path = Path('TestingDocuments\JSON_FewDocuments')
-    d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
+    # corpus_path = Path('TestingDocuments\JSON_FewDocuments')
+    # d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
 
     try:
         with open('BinaryFiles/index.bin', 'rb') as file:
@@ -90,34 +90,38 @@ if __name__ == "__main__":
     # query="\"photo galleri\" + learn requir"
     # query="park -science"
     # query="\"Explore this park\" science"
-    query=input("Enter the query ")
-    start_time = time.time()
-    result=boolean_query.parse_query(query.lower())
-    result=result.get_postings(index)
-    for i in result:
-        # print(d.get_document(i.doc_id).title) # For opening docs in the get_content
-        print(d.get_document(i.doc_id))
-        # print(i.doc_id)
-        print(i.positions)
-        break
-    if len(result)==0:
-        print("The given text is not found in any documents")
-    print("No. of documents ",len(result))
-    print("--- %s seconds for Search  ---" % (time.time() - start_time))
+    # query=input("Enter the query ")
+    # start_time = time.time()
+    # result=boolean_query.parse_query(query.lower())
+    # result=result.get_postings(index)
+    # for i in result:
+    #     # print(d.get_document(i.doc_id).title) # For opening docs in the get_content
+    #     print(d.get_document(i.doc_id))
+    #     # print(i.doc_id)
+    #     print(i.positions)
+    #     break
+    # if len(result)==0:
+    #     print("The given text is not found in any documents")
+    # print("No. of documents ",len(result))
+    # print("--- %s seconds for Search  ---" % (time.time() - start_time))
     # for i in result:
         # print(d.get_document(i.doc_id).title)
         # print(i.positions)
-    # while(True):
-    #     query=input("Enter the single term word(lower case) to search or 'q!' to quit the application\n")
-    #     start_time = time.time()
-    #     query=query.split(" ")
-    #     if len(query)>1:
-    #         print("Please enter a single term(lower case) to search in the documents")
-    #     elif query[0]=="q!":
-    #         break
-    #     else:
-    #         result=boolean_query.parse_query(query[0].lower())
-    #         for i in result.get_postings(index):
-    #             print(d.get_document(i.doc_id))
-    #             print(i.positions)
-    #     print("--- %s seconds for searching ---" % (time.time() - start_time))
+    while(True):
+        query=input("Enter text to search or 'q!' to quit the application\n")
+        start_time = time.time()
+        # query=query.split(" ")
+        if query=="q!":
+            break
+        else:
+            result=boolean_query.parse_query(query.lower())
+            result=result.get_postings(index)
+            if len(result)==0:
+                print("The given text is not found in any documents")
+            else:
+                print("No. of documents ",len(result))
+            for i in result:
+                print(d.get_document(i.doc_id))
+                print(i.positions)
+            
+        print("--- %s seconds for searching ---" % (time.time() - start_time))

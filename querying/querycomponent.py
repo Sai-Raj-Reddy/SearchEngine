@@ -14,6 +14,8 @@ class QueryComponent(ABC):
         """
         pass
 
+    def is_positive(self):
+        return True
     # @abstractmethod
     # def get_postings(self, index) -> list[Posting]:
     #     """

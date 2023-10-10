@@ -56,6 +56,9 @@ def serialize_index(index,d):
 
 
 if __name__ == "__main__":
+    corpus_path = Path('TestingDocuments\JSON_FewDocuments')
+    d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
+
     try:
         with open('BinaryFiles/index.bin', 'rb') as file:
             serialized_index = file.read()
@@ -78,14 +81,16 @@ if __name__ == "__main__":
         # Build the index over this directory.
         start_time = time.time()
         index = index_corpus(d)
-        serialize_index(index,d)
+        # serialize_index(index,d)
         # serialize_index(d)
         # print(index.get_postings("photo"))
         print("--- %s seconds for index corpus ---" % (time.time() - start_time))
     boolean_query=BooleanQueryParser()
     # query="\"Sand Creek Massacr Nation Histor Site Brochur\""
     # query="\"photo galleri\" + learn requir"
-    query="park -science"
+    # query="park -science"
+    # query="\"Explore this park\" science"
+    query=input("Enter the query ")
     start_time = time.time()
     result=boolean_query.parse_query(query.lower())
     result=result.get_postings(index)

@@ -86,13 +86,18 @@ class AndQuery(QueryComponent):
         NOT_query=False
         for m in range(1,len(self.components)):
             postings1=ans
-            if str(self.components[m])[0]=='-':
-                # print(type(self.components[m]))
-                postings2=self.components[m].get_postings(index)
-                NOT_query=True
-            else:
+            # if str(self.components[m])[0]=='-':
+            #     # print(type(self.components[m]))
+            #     postings2=self.components[m].get_postings(index)
+            #     NOT_query=True
+            # else:
+            #     NOT_query=False
+            #     postings2=self.components[m].get_postings(index)
+            if self.components[m].is_positive():
                 NOT_query=False
-                postings2=self.components[m].get_postings(index)
+            else:
+                NOT_query=True
+            postings2=self.components[m].get_postings(index)
             
             current=[]
             i,j=0,0

@@ -29,9 +29,9 @@ class DirectoryCorpus:
         :param dict factories: a dictionary of factory functions, mapping from a file extension (like .txt) to a function that constructs a Document-derived object for a given Path parameter.
         """
         self.corpus_path = abs_path
-        self.file_filter = file_filter
+        # self.file_filter = file_filter
         # print(file_filter)
-        # self.file_filter = json_file_filter
+        self.file_filter = json_file_filter
         self.factories = factories
         self._documents = None
 

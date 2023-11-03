@@ -33,6 +33,10 @@ class PositionalInvertedIndex(Index):
     #                 p.add_position(position)
     #                 self.PositionalIndex[term].append(p)
 
+    def get_index(self):
+        return self.PositionalIndex
+
+
     def add_Term(self,terms: list,doc_id:int,position:int):
         for term in terms:
             if term not in self.PositionalIndex:

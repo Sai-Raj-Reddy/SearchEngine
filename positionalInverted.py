@@ -1,6 +1,6 @@
 from pathlib import Path
 from documents import DocumentCorpus, DirectoryCorpus
-from indexing import Index, positionalinvertedindex
+from indexing import Index, positionalinvertedindex,diskindexwriter
 from text import BasicTokenProcessor, englishtokenstream, spanishtokenstream,basictokenprocessor_spanish
 import re
 import time
@@ -65,48 +65,50 @@ def index_corpus(corpus : DocumentCorpus) -> Index:
 def serialize_index(index,d):
     serialized_index = pickle.dumps(index)
     serialized_corpus=pickle.dumps(d)
-    with open('BinaryFiles/index_JSON_stemmed.bin', 'wb') as file:
+    with open('BinaryFiles/index_JSON_stemmed_diskwriter.bin.bin', 'wb') as file:
         file.write(serialized_index)
-    with open('BinaryFiles/document_corpus_JSON_stemmed.bin', 'wb') as file:
+    with open('BinaryFiles/document_corpus_JSON_stemmed_diskwriter.bin', 'wb') as file:
         file.write(serialized_corpus)
 
 
 if __name__ == "__main__":
-    corpus_path = Path('TestingDocuments\JSON_FewDocuments')
-    d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
+    # corpus_path = Path('TestingDocuments\JSON_FewDocuments')
+    # d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
     # corpus_path = Path('TestingDocuments\PDF')
     # d = DirectoryCorpus.load_pdf_directory(corpus_path,".pdf")
 
     # corpus_path = Path('TestingDocuments\HTMLFiles')
     # d = DirectoryCorpus.load_html_directory(corpus_path,".html")
-    index = index_corpus(d)
+    # index = index_corpus(d)
 
-    # try:
-    #     with open('BinaryFiles/index_JSON_stemmed.bin', 'rb') as file:
-    #         serialized_index = file.read()
-    #         index = pickle.loads(serialized_index)
-    #     with open('BinaryFiles/document_corpus_JSON_stemmed.bin', 'rb') as file:
-    #         serialized_index = file.read()
-    #         d = pickle.loads(serialized_index)
-    #     print("loaded from files")
+    try:
+        with open('BinaryFiles/index_JSON_stemmed.bin', 'rb') as file:
+            serialized_index = file.read()
+            index = pickle.loads(serialized_index)
+        with open('BinaryFiles/document_corpus_JSON_stemmed.bin', 'rb') as file:
+            serialized_index = file.read()
+            d = pickle.loads(serialized_index)
+        print("loaded from files")
         
-    # except FileNotFoundError:
-    #     print("File Not Found")
-    #     start_time = time.time()
-    #     # JSON_FewDocuments
-    #     # JSON_Testing2
-    #     corpus_path = Path('TestingDocuments\JSON')
-    #     d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
-    #     # corpus_path = Path('TestingDocuments\MobyDick10Chapters')
-    #     # d = DirectoryCorpus.load_text_directory(corpus_path, ".txt")
-    #     print("--- %s seconds for directory load  ---" % (time.time() - start_time))
-    #     # Build the index over this directory.
-    #     start_time = time.time()
-    #     index = index_corpus(d)
-    #     serialize_index(index,d)
-    #     # serialize_index(d)
-    #     # print(index.get_postings("photo"))
-    #     print("--- %s seconds for index corpus ---" % (time.time() - start_time))
+    except FileNotFoundError:
+        print("File Not Found")
+        start_time = time.time()
+        # JSON_FewDocuments
+        # JSON_Testing2
+        corpus_path = Path('TestingDocuments\JSON_FewDocuments')
+        d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
+        # corpus_path = Path('TestingDocuments\MobyDick10Chapters')
+        # d = DirectoryCorpus.load_text_directory(corpus_path, ".txt")
+        print("--- %s seconds for directory load  ---" % (time.time() - start_time))
+        # Build the index over this directory.
+        start_time = time.time()
+        index = index_corpus(d)
+        serialize_index(index,d)
+        # serialize_index(d)
+        # print(index.get_postings("photo"))
+        print("--- %s seconds for index corpus ---" % (time.time() - start_time))
+    diskwriter=diskindexwriter.DiskIndexWriter()
+    diskwriter.writeIndex(index.get_index())
     boolean_query=BooleanQueryParser()
     # query="\"Sand Creek Massacr Nation Histor Site Brochur\""
     # query="\"photo galleri\" + learn requir"

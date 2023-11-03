@@ -1,14 +1,15 @@
 from .tokenprocessor import TokenProcessor
 import re
 from porter2stemmer import Porter2Stemmer
+from nltk.stem import SnowballStemmer
 
-
-class BasicTokenProcessor(TokenProcessor):
+class BasicTokenProcessorSpanish(TokenProcessor):
     """A BasicTokenProcessor creates terms from tokens by removing all non-alphanumeric characters 
     from the token, and converting it to all lowercase."""
     whitespace_re = re.compile(r"\W+")
     Stemmer=Porter2Stemmer()
-    def process_token(self, token : str):
+    spanish_stemmer=SnowballStemmer("spanish")
+    def process_token(self, token : str,lang: str):
         # return [token]
         # # token=re.sub(self.whitespace_re, "", token)
         # split_tokens=[token]
@@ -66,9 +67,11 @@ class BasicTokenProcessor(TokenProcessor):
         #     final_tokens.append(s)
         # print([self.normalize(token) for token in non_alphanumeric])
         # return non_alphanumeric
-        return [self.normalize(token) for token in non_alphanumeric]
+        return [self.normalize(token,lang) for token in non_alphanumeric]
     
-    def normalize(self,token: str):
+    def normalize(self,token: str,lang: str):
         # return self.Stemmer.ste
+        if lang=='es':
+            return self.spanish_stemmer.stem(token)
         return self.Stemmer.stem(token)
         

@@ -1,18 +1,21 @@
 from pathlib import Path
 from documents import DocumentCorpus, DirectoryCorpus
 from indexing import Index, positionalinvertedindex
-from text import BasicTokenProcessor, englishtokenstream
+from text import BasicTokenProcessor, englishtokenstream, spanishtokenstream,basictokenprocessor_spanish
 import re
 import time
 from querying import BooleanQueryParser
 
+
+from langdetect import detect
 
 import pickle
 
 
 
 def index_corpus(corpus : DocumentCorpus) -> Index:
-    token_processor = BasicTokenProcessor()
+    # token_processor = BasicTokenProcessor()
+    token_processor=basictokenprocessor_spanish.BasicTokenProcessorSpanish()
     PositionalInvertedIndex=positionalinvertedindex.PositionalInvertedIndex()
     doc_count=1
     test=1
@@ -26,16 +29,29 @@ def index_corpus(corpus : DocumentCorpus) -> Index:
         # start_time = time.time()
         # print(type(d.get_content()))
         # break
-        english_token_stream=englishtokenstream.EnglishTokenStream(d.get_content())
-        # print("--- %s seconds for EnglishToken stream  ---" % (time.time() - start_time))
-        # print(d.get_content())
-        # break
+
+
+        # token_stream=englishtokenstream.EnglishTokenStream(d.get_content())
         position=1
-        # start_time = time.time()
-        for i in english_token_stream:
+
+
+        # This is for langdetect
+        text=d.get_content()[0]
+        if detect(text)=='es':
+            lang='es'
+            token_stream=spanishtokenstream.SpanishTokenStream(text)
+        else:
+            lang='en'
+            token_stream=englishtokenstream.EnglishTokenStream(d.get_content())
+        # when commenting this also comment import and change token_processor back to basictokenprocessor and change process token function call in below loop
+
+
+        for i in token_stream:
             # print(i)
-            # print(token_processor.process_token(i))
-            terms=token_processor.process_token(i)
+            # print(i)
+            # terms=token_processor.process_token(i)
+            terms=token_processor.process_token(i,lang)
+            # print(terms)
             PositionalInvertedIndex.add_Term(terms,d.id,position)
             position+=1
         # print("--- %s seconds for process token  ---" % (time.time() - start_time))
@@ -56,35 +72,41 @@ def serialize_index(index,d):
 
 
 if __name__ == "__main__":
-    # corpus_path = Path('TestingDocuments\JSON_FewDocuments')
-    # d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
+    corpus_path = Path('TestingDocuments\JSON_FewDocuments')
+    d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
+    # corpus_path = Path('TestingDocuments\PDF')
+    # d = DirectoryCorpus.load_pdf_directory(corpus_path,".pdf")
 
-    try:
-        with open('BinaryFiles/index_JSON_stemmed.bin', 'rb') as file:
-            serialized_index = file.read()
-            index = pickle.loads(serialized_index)
-        with open('BinaryFiles/document_corpus_JSON_stemmed.bin', 'rb') as file:
-            serialized_index = file.read()
-            d = pickle.loads(serialized_index)
-        print("loaded from files")
+    # corpus_path = Path('TestingDocuments\HTMLFiles')
+    # d = DirectoryCorpus.load_html_directory(corpus_path,".html")
+    index = index_corpus(d)
+
+    # try:
+    #     with open('BinaryFiles/index_JSON_stemmed.bin', 'rb') as file:
+    #         serialized_index = file.read()
+    #         index = pickle.loads(serialized_index)
+    #     with open('BinaryFiles/document_corpus_JSON_stemmed.bin', 'rb') as file:
+    #         serialized_index = file.read()
+    #         d = pickle.loads(serialized_index)
+    #     print("loaded from files")
         
-    except FileNotFoundError:
-        print("File Not Found")
-        start_time = time.time()
-        # JSON_FewDocuments
-        # JSON_Testing2
-        corpus_path = Path('TestingDocuments\JSON')
-        d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
-        # corpus_path = Path('TestingDocuments\MobyDick10Chapters')
-        # d = DirectoryCorpus.load_text_directory(corpus_path, ".txt")
-        print("--- %s seconds for directory load  ---" % (time.time() - start_time))
-        # Build the index over this directory.
-        start_time = time.time()
-        index = index_corpus(d)
-        serialize_index(index,d)
-        # serialize_index(d)
-        # print(index.get_postings("photo"))
-        print("--- %s seconds for index corpus ---" % (time.time() - start_time))
+    # except FileNotFoundError:
+    #     print("File Not Found")
+    #     start_time = time.time()
+    #     # JSON_FewDocuments
+    #     # JSON_Testing2
+    #     corpus_path = Path('TestingDocuments\JSON')
+    #     d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
+    #     # corpus_path = Path('TestingDocuments\MobyDick10Chapters')
+    #     # d = DirectoryCorpus.load_text_directory(corpus_path, ".txt")
+    #     print("--- %s seconds for directory load  ---" % (time.time() - start_time))
+    #     # Build the index over this directory.
+    #     start_time = time.time()
+    #     index = index_corpus(d)
+    #     serialize_index(index,d)
+    #     # serialize_index(d)
+    #     # print(index.get_postings("photo"))
+    #     print("--- %s seconds for index corpus ---" % (time.time() - start_time))
     boolean_query=BooleanQueryParser()
     # query="\"Sand Creek Massacr Nation Histor Site Brochur\""
     # query="\"photo galleri\" + learn requir"

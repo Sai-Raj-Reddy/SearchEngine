@@ -1,1 +1,4 @@
 porter2stemmer~=1.0
+PyPDF2==3.0.1
+typing_extensions==4.7.1
+bs4==0.0.1

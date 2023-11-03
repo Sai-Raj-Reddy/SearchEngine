@@ -6,6 +6,8 @@ from typing import Callable, Iterable, Iterator
 from documents.document import Document
 from . import textfiledocument
 from . import jsonfiledocument
+from . import pdffiledocument
+from . import htmlfiledocument
 from pathlib import Path
 
 def json_file_filter(file_path):
@@ -75,4 +77,18 @@ class DirectoryCorpus:
         c=DirectoryCorpus(path,
                           lambda f: f.suffix == extension,
                           factories={extension: jsonfiledocument.JsonFileDocument.load_from})
+        return c
+    
+    @staticmethod
+    def load_pdf_directory(path,extension) -> 'DirectoryCorpus':
+        c=DirectoryCorpus(path,
+                          lambda f: f.suffix == extension,
+                          factories={extension: pdffiledocument.PDFFileDocument.load_from})
+        return c
+    
+    @staticmethod
+    def load_html_directory(path,extension) -> 'DirectoryCorpus':
+        c=DirectoryCorpus(path,
+                          lambda f: f.suffix == extension,
+                          factories={extension: htmlfiledocument.HTMLFileDocument.load_from})
         return c

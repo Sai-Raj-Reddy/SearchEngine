@@ -1,0 +1,6 @@
+sending DiskPositionalIndex class object for querying
+Fixing the query to insert all values at once
+Completing the code for get_postings in DiskPositionalIndex
+Variable encoding
+Corpus SPIMI algo implementation
+Ranked querying

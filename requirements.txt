@@ -1,5 +1,9 @@
 porter2stemmer~=1.0
 PyPDF2==3.0.1
-typing_extensions==4.7.1
 bs4==0.0.1
+spacy==3.1.7
 psycopg2==2.9.9
+typing_extensions==4.7.1
+langdetect==1.0.9
+nltk==3.8.1
+es_core_news_sm==3.1.0

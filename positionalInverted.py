@@ -1,7 +1,8 @@
 from pathlib import Path
 from documents import DocumentCorpus, DirectoryCorpus
 from indexing import Index, positionalinvertedindex,diskindexwriter
-from text import BasicTokenProcessor, englishtokenstream, spanishtokenstream,basictokenprocessor_spanish
+from text import BasicTokenProcessor, englishtokenstream,spanishtokenstream,basictokenprocessor_spanish
+# spanishtokenstream
 import re
 import time
 from querying import BooleanQueryParser
@@ -24,6 +25,7 @@ def index_corpus(corpus : DocumentCorpus) -> Index:
         if doc_count%1000==0:
             print(test)
             test+=1
+        # print(d.id)
         # print("Index_docs ",doc_count)
         # print(f"Found document {d.title}")
         # start_time = time.time()
@@ -40,6 +42,7 @@ def index_corpus(corpus : DocumentCorpus) -> Index:
         if detect(text)=='es':
             lang='es'
             token_stream=spanishtokenstream.SpanishTokenStream(text)
+            # token_stream=englishtokenstream.EnglishTokenStream(d.get_content())
         else:
             lang='en'
             token_stream=englishtokenstream.EnglishTokenStream(d.get_content())
@@ -65,7 +68,7 @@ def index_corpus(corpus : DocumentCorpus) -> Index:
 def serialize_index(index,d):
     serialized_index = pickle.dumps(index)
     serialized_corpus=pickle.dumps(d)
-    with open('BinaryFiles/index_JSON_stemmed_diskwriter.bin.bin', 'wb') as file:
+    with open('BinaryFiles/index_JSON_stemmed_diskwriter.bin', 'wb') as file:
         file.write(serialized_index)
     with open('BinaryFiles/document_corpus_JSON_stemmed_diskwriter.bin', 'wb') as file:
         file.write(serialized_corpus)
@@ -108,7 +111,7 @@ if __name__ == "__main__":
         # print(index.get_postings("photo"))
         print("--- %s seconds for index corpus ---" % (time.time() - start_time))
     diskwriter=diskindexwriter.DiskIndexWriter()
-    diskwriter.writeIndex(index.get_index())
+    diskwriter.writeIndex(index.get_index(),d)
     boolean_query=BooleanQueryParser()
     # query="\"Sand Creek Massacr Nation Histor Site Brochur\""
     # query="\"photo galleri\" + learn requir"

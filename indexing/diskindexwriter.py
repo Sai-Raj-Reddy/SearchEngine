@@ -41,9 +41,21 @@ class DiskIndexWriter():
                 queries_mapping.append((i,current_position))
                 packed_data=struct.pack("i"*len(l),*l)
                 file.write(packed_data)
-        print(queries_mapping)
-        query=f"INSERT INTO \"SearchEngine_Schema\".\"SearchIndex\" (term,disk_position) VALUES ('{i}',{current_position})"
-        cursor.execute("INSERT INTO \"SearchEngine_Schema\".\"SearchIndex\" (term,disk_position) VALUES %s,%s",queries_mapping)
+        # print(queries_mapping)
+                if len(queries_mapping)%1000==0:
+                    query="INSERT INTO \"SearchEngine_Schema\".\"SearchIndex\" (term,disk_position) VALUES "
+                    for map in range(len(queries_mapping)-1):
+                        query+=str(queries_mapping[map])+','
+                    query+=str(queries_mapping[-1])
+                    cursor.execute(query)
+                    queries_mapping=[]
+        if len(queries_mapping)!=0:
+            query="INSERT INTO \"SearchEngine_Schema\".\"SearchIndex\" (term,disk_position) VALUES "
+            for map in range(len(queries_mapping)-1):
+                query+=str(queries_mapping[map])+','
+            query+=str(queries_mapping[-1])
+            # cursor.execute("INSERT INTO \"SearchEngine_Schema\".\"SearchIndex\" (term,disk_position) VALUES %s,%s",queries_mapping)
+            cursor.execute(query)
 #             cursor.execute("INSERT INTO \"SearchEngine_Schema\".\"SearchIndex\" (term,disk_position) VALUES %s,%s",d)
 # TypeError: not all arguments converted during string formatting
 # Maybe integer in term like '8' causing this error check dbtest file for more info or %s,%s is only taking two tuples and giving error for third one
@@ -52,18 +64,24 @@ class DiskIndexWriter():
         conn.commit()
         file.close()
         cursor.close()
-        with open('BinaryFiles/docWeights_test1.bin', 'wb') as file:
+        with open('BinaryFiles/docWeights.bin', 'wb') as file:
             for d in corpus:
                 try:
                     L_d=math.sqrt(l_d_dict[d.id])
                     packed_data=struct.pack("d",L_d)
                     file.write(packed_data)
                 except KeyError as e:
-                    print("Exception occurred while writing eucladian length")
+                    print("Exception occurred while writing euclidian length")
                     print("doc_id not present in l_d_dict")
                     print("doc_id ",d.id)
                     print(e)
+                    print("Writing 0 for this doc")
+                    packed_data=struct.pack("d",0)
+                    file.write(packed_data)
                 except Exception as e:
-                    print("Exception occurred while writing eucladian length")
+                    print("Exception occurred while writing euclidian length")
                     print(e)
+                    print("Writing 0 for this doc")
+                    packed_data=struct.pack("d",0)
+                    file.write(packed_data)
         file.close()

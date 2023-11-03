@@ -32,7 +32,7 @@ class BasicTokenProcessorSpanish(TokenProcessor):
                 i=0
                 j=len(s)-1
                 while(i<j):
-                    ascii_val=ord(s[i])
+                    # ascii_val=ord(s[i])
                     # if (ascii_val>=48 and ascii_val<=57) or (ascii_val>=65 and ascii_val<=90) or (ascii_val>=97 and ascii_val<=122):
                     if s[i].isalnum():
                         break

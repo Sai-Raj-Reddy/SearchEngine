@@ -3,10 +3,12 @@ from .postings import Posting
 from .index import Index
 import psycopg2
 import struct
+from text import basictokenprocessor_spanish,basictokenprocessor
+from langdetect import detect
 
 class DiskPositionalIndex(Index):
     def __init__(self):
-        self.path='BinaryFiles\document_corpus_JSON_stemmed_diskwriter.bin'
+        self.path='BinaryFiles\disk_postings.bin'
 
         self.conn = psycopg2.connect(database="postgres",
                         host="127.0.0.1",
@@ -14,17 +16,28 @@ class DiskPositionalIndex(Index):
                         password="Jinsakai@25",
                         port="5432")
         self.cursor=self.conn.cursor()
+        # self.p=basictokenprocessor_spanish.BasicTokenProcessorSpanish()
+        self.p=basictokenprocessor.BasicTokenProcessor()
 
     def get_term_position(self,term):
-        self.cursor.execute("SELECT disk_position from \"SearchEngine_Schema\".\"SearchIndex\" WHERE term='{term}'")
+        self.cursor.execute(f"SELECT disk_position from \"SearchEngine_Schema\".\"SearchIndex\" WHERE term='{term}'")
         result=self.cursor.fetchall()
         if len(result)==0:
             return -1
         for i in result:
-            return i
+            return i[0]
 
     def get_postings(self,term):
-        term_position=self.get_term_position(term)
+        # if detect(term)=='es':
+        #     lang='es'
+        # else:
+        #     lang='en'
+
+        # processed_term=self.p.process_token(term,lang)[0]
+        # if term=='Latinoamérica':
+        #     print(term,processed_term,lang)
+        processed_term=self.p.process_token(term)[0]
+        term_position=self.get_term_position(processed_term)
         if term_position==-1:
             return []
         with open(self.path,'rb') as file:
@@ -34,6 +47,22 @@ class DiskPositionalIndex(Index):
                 print("Exception occurred while seeking to the position of term in postings.bin file")
                 print(e)
             dft=struct.unpack("i",file.read(4))[0] # checkif it's unpacking dft as expected and then loop for range in dft then cal doc_id from gap and then positions from positions gap
-        
-
+            print("dft",dft)
+            postings=[]
+            prev_doc_id=0
+            for _ in range(dft):
+                doc_id_gap=struct.unpack("i",file.read(4))[0] #doc_id gap
+                doc_id=prev_doc_id+doc_id_gap
+                p=Posting(doc_id)
+                prev_doc_id=doc_id
+                tftd=struct.unpack("i",file.read(4))[0] # number of terms in this doc
+                prev_position_id=0
+                for m in range(tftd):
+                    position_id_gap=struct.unpack("i",file.read(4))[0] #position id gap
+                    position=prev_position_id+position_id_gap
+                    prev_position_id=position
+                    p.add_position(position)
+                postings.append(p)
+            
         file.close()
+        return postings

@@ -7,13 +7,20 @@ conn = psycopg2.connect(database="postgres",
 cursor = conn.cursor()
 s="testing"
 i=10
-d=[('test1',1),('testing1',10),('8',8)]
-query=f"INSERT INTO \"SearchEngine_Schema\".\"SearchIndex\" (term,disk_position) VALUES (\'{s}\',{i})"
-cursor.execute("INSERT INTO \"SearchEngine_Schema\".\"SearchIndex\" (term,disk_position) VALUES %s,%s",d)
+d=[('test1',1),('8',8),('testing3',9)]
+query="INSERT INTO \"SearchEngine_Schema\".\"SearchIndex\" (term,disk_position) VALUES "
+for i in range(len(d)-1):
+    query+=str(d[i])+","
+query+=str(d[-1])
+print(query)
+# cursor.execute("INSERT INTO \"SearchEngine_Schema\".\"SearchIndex\" (term,disk_position) VALUES %s,%s",d)
+# cursor.execute(query)
 # cursor.execute("DELETE FROM \"SearchEngine_Schema\".\"SearchIndex\"")
-cursor.execute("SELECT * FROM \"SearchEngine_Schema\".\"SearchIndex\"")
+# cursor.execute("SELECT * FROM \"SearchEngine_Schema\".\"SearchIndex\"")
+cursor.execute("SELECT disk_position from \"SearchEngine_Schema\".\"SearchIndex\" WHERE term='discov'")
 
 retrieved_data=cursor.fetchall()
+print(len(retrieved_data))
 for i in retrieved_data:
-    print(i)
-conn.commit()
+    print(i[0])
+# conn.commit()

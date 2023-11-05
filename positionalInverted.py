@@ -1,6 +1,6 @@
 from pathlib import Path
 from documents import DocumentCorpus, DirectoryCorpus
-from indexing import Index, positionalinvertedindex,diskindexwriter,diskpositionalindex
+from indexing import Index, positionalinvertedindex,diskindexwriter,diskpositionalindex,diskpositionalindexvariable,diskindexwritervariable
 from text import BasicTokenProcessor, englishtokenstream,spanishtokenstream,basictokenprocessor_spanish
 # spanishtokenstream
 import re
@@ -124,10 +124,13 @@ def serialize_index(index,d):
 #         # print(index.get_postings("photo"))
 #         print("--- %s seconds for index corpus ---" % (time.time() - start_time))
 #     start_time = time.time()
-#     diskwriter=diskindexwriter.DiskIndexWriter()
-#     diskwriter.writeIndex(index.get_index(),d)
+#     # diskwriter=diskindexwriter.DiskIndexWriter()
+#     # diskwriter.writeIndex(index.get_index(),d)
+#     # diskwriter=diskindexwritervariable.DiskIndexWriterVariable()
+#     # diskwriter.writeIndex(index.get_index(),d)
 #     print("--- %s seconds for disk and database writing  ---" % (time.time() - start_time))
-#     index=diskpositionalindex.DiskPositionalIndex()
+#     # index=diskpositionalindex.DiskPositionalIndex()
+#     # index=diskpositionalindexvariable.DiskPositionalIndexVariable()
 #     boolean_query=BooleanQueryParser()
 #     # query="\"Sand Creek Massacr Nation Histor Site Brochur\""
 #     # query="\"photo galleri\" + learn requir"
@@ -173,7 +176,8 @@ def serialize_index(index,d):
 
 # This is for database search
 if __name__ == "__main__":
-    index=diskpositionalindex.DiskPositionalIndex()
+    # index=diskpositionalindex.DiskPositionalIndex()
+    index=diskpositionalindexvariable.DiskPositionalIndexVariable()
     # index.get_postings('discover')
     boolean_query=BooleanQueryParser()
     with open('BinaryFiles\document_corpus_JSON_Positional_Index.bin', 'rb') as file:

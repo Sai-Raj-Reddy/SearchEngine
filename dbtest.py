@@ -1,9 +1,10 @@
 import psycopg2
-conn = psycopg2.connect(database="postgres",
-                        host="127.0.0.1",
-                        user="postgres",
-                        password="Jinsakai@25",
-                        port="5432")
+from indexing import config
+conn = psycopg2.connect(database=config.db,
+                        host=config.host,
+                        user=config.host,
+                        password=config.password,
+                        port=config.port)
 cursor = conn.cursor()
 s="testing"
 i=10

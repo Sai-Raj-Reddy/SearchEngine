@@ -1,7 +1,7 @@
 import struct
 import psycopg2
 import math
-import config
+# import config
 class DiskIndexWriterVariable():
     def encode_number(self,number):
         bytes_list=[]
@@ -18,11 +18,16 @@ class DiskIndexWriterVariable():
         return bytes_list
     def writeIndex(self,index,corpus):
         queries_mapping=[]
-        conn = psycopg2.connect(database=config.db,
-                        host=config.host,
-                        user=config.host,
-                        password=config.password,
-                        port=config.port)
+        # database=config.db,
+        #                 host=config.host,
+        #                 user=config.host,
+        #                 password=config.password,
+        #                 port=config.port
+        conn = psycopg2.connect(database="postgres",
+                        host="127.0.0.1",
+                        user="postgres",
+                        password="Jinsakai@25",
+                        port="5432")
         cursor=conn.cursor()
         l_d_dict={} # To calculate l_d length storing the doc_id as we encounter for each term in the index
         with open('BinaryFiles/disk_postings_variable.bin', 'wb') as file:

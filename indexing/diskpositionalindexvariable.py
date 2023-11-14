@@ -5,18 +5,18 @@ import psycopg2
 import struct
 from text import basictokenprocessor_spanish,basictokenprocessor
 from langdetect import detect
-import config
+# import config
 
 
 class DiskPositionalIndexVariable(Index):
     def __init__(self):
         self.path='BinaryFiles\disk_postings.bin'
 
-        self.conn = psycopg2.connect(database=config.db,
-                        host=config.host,
-                        user=config.host,
-                        password=config.password,
-                        port=config.port)
+        self.conn = psycopg2.connect(database="postgres",
+                        host="127.0.0.1",
+                        user="postgres",
+                        password="Jinsakai@25",
+                        port="5432")
         self.cursor=self.conn.cursor()
         # self.p=basictokenprocessor_spanish.BasicTokenProcessorSpanish()
         self.p=basictokenprocessor.BasicTokenProcessor()

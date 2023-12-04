@@ -1,6 +1,6 @@
 from pathlib import Path
 from documents import DocumentCorpus, DirectoryCorpus
-from indexing import Index, positionalinvertedindex,diskindexwriter,diskpositionalindex,diskpositionalindexvariable,diskindexwritervariable
+from indexing import Index, positionalinvertedindex,diskindexwriter,diskpositionalindex,diskpositionalindexvariable,diskindexwritervariable,rankedretrievalindex
 from text import BasicTokenProcessor, englishtokenstream,spanishtokenstream,basictokenprocessor_spanish
 # spanishtokenstream
 import re
@@ -111,10 +111,10 @@ def serialize_index(index,d):
 #         #     serialized_index = file.read()
 #         #     d = pickle.loads(serialized_index)
 #         # print("loaded from files")
-#         with open('BinaryFiles/index_Ranked_less_docs.bin', 'rb') as file:
+#         with open('BinaryFiles/index_JSON_Positional_Index.bin', 'rb') as file:
 #             serialized_index = file.read()
 #             index = pickle.loads(serialized_index)
-#         with open('BinaryFiles/document_corpus_Ranked_less_docs.bin', 'rb') as file:
+#         with open('BinaryFiles/document_corpus_JSON_Positional_Index.bin', 'rb') as file:
 #             serialized_index = file.read()
 #             d = pickle.loads(serialized_index)
 #         print("loaded from files")
@@ -137,8 +137,8 @@ def serialize_index(index,d):
 #         # print(index.get_postings("photo"))
 #         print("--- %s seconds for index corpus ---" % (time.time() - start_time))
 #     start_time = time.time()
-#     # diskwriter=diskindexwriter.DiskIndexWriter()
-#     # diskwriter.writeIndex(index.get_index(),d)
+#     diskwriter=diskindexwriter.DiskIndexWriter()
+#     diskwriter.writeIndex(index.get_index(),d)
 #     # diskwriter=diskindexwritervariable.DiskIndexWriterVariable()
 #     # diskwriter.writeIndex(index.get_index(),d)
 #     print("--- %s seconds for disk and database writing  ---" % (time.time() - start_time))
@@ -187,10 +187,11 @@ def serialize_index(index,d):
 
 
 
-# # This is for database search
+# # This is for database search -working diskpositional index
 # if __name__ == "__main__":
 #     # index=diskpositionalindex.DiskPositionalIndex()
-#     index=diskpositionalindexvariable.DiskPositionalIndexVariable()
+#     # index=diskpositionalindexvariable.DiskPositionalIndexVariable()
+#     index=diskpositionalindex.DiskPositionalIndex()
 #     # index.get_postings('discover')
 #     boolean_query=BooleanQueryParser()
 #     with open('BinaryFiles\document_corpus_JSON_Positional_Index.bin', 'rb') as file:
@@ -217,78 +218,14 @@ def serialize_index(index,d):
 
 # This is for ranked retrieval- wrong - use diskpositionalindex since it has tf-idf
 if __name__ == "__main__":
-    # corpus_path = Path('TestingDocuments\JSON_FewDocuments')
-    # d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
-    # corpus_path = Path('TestingDocuments\PDF')
-    # d = DirectoryCorpus.load_pdf_directory(corpus_path,".pdf")
-
-    # corpus_path = Path('TestingDocuments\HTMLFiles')
-    # d = DirectoryCorpus.load_html_directory(corpus_path,".html")
-    # index = index_corpus(d)
-
-    try:
-        # with open('BinaryFiles/index_JSON_Positional_Index.bin', 'rb') as file:
-        #     serialized_index = file.read()
-        #     index = pickle.loads(serialized_index)
-        # with open('BinaryFiles/document_corpus_JSON_Positional_Index.bin', 'rb') as file:
-        #     serialized_index = file.read()
-        #     d = pickle.loads(serialized_index)
-        # print("loaded from files")
-        with open('BinaryFiles/index_Ranked_less_docs.bin', 'rb') as file:
-            serialized_index = file.read()
-            index = pickle.loads(serialized_index)
-        with open('BinaryFiles/document_corpus_Ranked_less_docs.bin', 'rb') as file:
-            serialized_index = file.read()
-            d = pickle.loads(serialized_index)
-        print("loaded from files")
-        
-    except FileNotFoundError:
-        print("File Not Found")
-        start_time = time.time()
-        # JSON_FewDocuments
-        # JSON_Testing2
-        corpus_path = Path('TestingDocuments\JSON')
-        d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
-        # corpus_path = Path('TestingDocuments\MobyDick10Chapters')
-        # d = DirectoryCorpus.load_text_directory(corpus_path, ".txt")
-        print("--- %s seconds for directory load  ---" % (time.time() - start_time))
-        # Build the index over this directory.
-        start_time = time.time()
-        index = index_corpus(d)
-        serialize_index(index,d)
-        # serialize_index(d)
-        # print(index.get_postings("photo"))
-        print("--- %s seconds for index corpus ---" % (time.time() - start_time))
-    start_time = time.time()
-    # diskwriter=diskindexwriter.DiskIndexWriter()
-    # diskwriter.writeIndex(index.get_index(),d)
-    # diskwriter=diskindexwritervariable.DiskIndexWriterVariable()
-    # diskwriter.writeIndex(index.get_index(),d)
-    print("--- %s seconds for disk and database writing  ---" % (time.time() - start_time))
     # index=diskpositionalindex.DiskPositionalIndex()
     # index=diskpositionalindexvariable.DiskPositionalIndexVariable()
+    index=rankedretrievalindex.RankedRetrievalIndex()
+    # index.get_postings('discover')
     boolean_query=BooleanQueryParser()
-    # query="\"Sand Creek Massacr Nation Histor Site Brochur\""
-    # query="\"photo galleri\" + learn requir"
-    # query="park -science"
-    # query="\"Explore this park\" science"
-    # query=input("Enter the query ")
-    # start_time = time.time()
-    # result=boolean_query.parse_query(query.lower())
-    # result=result.get_postings(index)
-    # for i in result:
-    #     # print(d.get_document(i.doc_id).title) # For opening docs in the get_content
-    #     print(d.get_document(i.doc_id))
-    #     # print(i.doc_id)
-    #     print(i.positions)
-    #     break
-    # if len(result)==0:
-    #     print("The given text is not found in any documents")
-    # print("No. of documents ",len(result))
-    # print("--- %s seconds for Search  ---" % (time.time() - start_time))
-    # for i in result:
-        # print(d.get_document(i.doc_id).title)
-        # print(i.positions)
+    with open('BinaryFiles\document_corpus_JSON_Positional_Index.bin', 'rb') as file:
+        serialized_index = file.read()
+        d = pickle.loads(serialized_index)
     while(True):
         query=input("Enter text to search or 'q!' to quit the application\n")
         start_time = time.time()
@@ -296,14 +233,20 @@ if __name__ == "__main__":
         if query=="q!":
             break
         else:
-            result=boolean_query.parse_query(query)
-            result=result.get_postings(index)
-            if len(result)==0:
+            # result=boolean_query.parse_query(query)
+            result=index.rank_documents(query)
+            # result=result.get_postings(index)
+            if result.qsize()==0:
                 print("The given text is not found in any documents")
                 continue
-            for i in result:
-                print(d.get_document(i.doc_id))
-                print(i.positions)
+            if result.qsize()<10:
+                while not result.empty():
+                    next=result.get()
+                    print(d.get_document(next[1]),next[0]*(-1))
+            else:
+                for i in range(10):
+                    next=result.get()
+                    print(d.get_document(next[1]),next[0]*(-1))
                 # break
-            print("No. of documents ",len(result))
+            # print("No. of documents ",result.qsize())
         print("--- %s seconds for searching ---" % (time.time() - start_time))

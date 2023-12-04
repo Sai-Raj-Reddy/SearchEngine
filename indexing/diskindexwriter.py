@@ -11,7 +11,7 @@ class DiskIndexWriter():
                         port="5432")
         cursor=conn.cursor()
         l_d_dict={} # To calculate l_d length storing the doc_id as we encounter for each term in the index
-        with open('BinaryFiles/disk_postings.bin', 'wb') as file:
+        with open('BinaryFiles/disk_postings_db.bin', 'wb') as file:
             prev_docid=0
             for i in index:
                 l=[]
@@ -61,15 +61,19 @@ class DiskIndexWriter():
 # Maybe integer in term like '8' causing this error check dbtest file for more info or %s,%s is only taking two tuples and giving error for third one
         # print(query)
                 # store the term and current_position to database
-        conn.commit()
+        # conn.commit()
         file.close()
-        cursor.close()
+        # cursor.close()
         with open('BinaryFiles/docWeights.bin', 'wb') as file:
+            i=1
+            doc_mapping=[]
+            doc_mappingvalue=[]
             for d in corpus:
                 try:
                     L_d=math.sqrt(l_d_dict[d.id])
                     packed_data=struct.pack("d",L_d)
                     file.write(packed_data)
+                    
                 except KeyError as e:
                     print("Exception occurred while writing euclidian length")
                     print("doc_id not present in l_d_dict")
@@ -77,11 +81,44 @@ class DiskIndexWriter():
                     print(e)
                     print("Writing 0 for this doc")
                     packed_data=struct.pack("d",0)
+                    current_position=file.tell()
                     file.write(packed_data)
                 except Exception as e:
                     print("Exception occurred while writing euclidian length")
                     print(e)
-                    print("Writing 0 for this doc")
-                    packed_data=struct.pack("d",0)
+                    # print("Writing 0 for this doc")
+                    packed_data=struct.pack("d",L_d)
+                    current_position=file.tell()
                     file.write(packed_data)
+                doc_mapping.append((d.id,current_position))
+                doc_mappingvalue.append((d.id,L_d))
+                if i%1000==0:
+                    query="INSERT INTO \"SearchEngine_Schema\".\"DocMapping\" (docid,disk_position) VALUES "
+                    for map in range(len(doc_mapping)-1):
+                        query+=str(doc_mapping[map])+','
+                    query+=str(doc_mapping[-1])
+                    cursor.execute(query)
+                    doc_mapping=[]
+                    query="INSERT INTO \"SearchEngine_Schema\".\"DocMappingValues\" (docid,ldvalue) VALUES "
+                    for map in range(len(doc_mappingvalue)-1):
+                        query+=str(doc_mappingvalue[map])+','
+                    query+=str(doc_mappingvalue[-1])
+                    cursor.execute(query)
+                    doc_mappingvalue=[]
+                i+=1
+        query="INSERT INTO \"SearchEngine_Schema\".\"DocMapping\" (docid,disk_position) VALUES "
+        for map in range(len(doc_mapping)-1):
+            query+=str(doc_mapping[map])+','
+        query+=str(doc_mapping[-1])
+        cursor.execute(query)
+        doc_mapping=[]
+        query="INSERT INTO \"SearchEngine_Schema\".\"DocMappingValues\" (docid,ldvalue) VALUES "
+        for map in range(len(doc_mappingvalue)-1):
+            query+=str(doc_mappingvalue[map])+','
+        query+=str(doc_mappingvalue[-1])
+        cursor.execute(query)
+        doc_mappingvalue=[]
         file.close()
+        conn.commit()
+        # file.close()
+        cursor.close()

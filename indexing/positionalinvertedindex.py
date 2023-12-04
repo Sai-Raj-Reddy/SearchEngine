@@ -81,11 +81,11 @@ class PositionalInvertedIndex(Index):
         # if term[0]=='-':
         #     term=term[1:]
         # term=self.Stemmer.stem(term)
-        if detect(term)=='es':
-            lang='es'
-        else:
-            lang='en'
-        term=self.p.process_token(term,lang)[0]
+        # if detect(term)=='es':
+        #     lang='es'
+        # else:
+        #     lang='en'
+        term=self.p.process_token(term)[0]
         if term in self.PositionalIndex:
             return self.PositionalIndex[term]
             # return [Posting(doc_id) for doc_id in self.PositionalIndex[term]]

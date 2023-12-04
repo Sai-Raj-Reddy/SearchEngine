@@ -9,7 +9,7 @@ class BasicTokenProcessorSpanish(TokenProcessor):
     whitespace_re = re.compile(r"\W+")
     Stemmer=Porter2Stemmer()
     spanish_stemmer=SnowballStemmer("spanish")
-    def process_token(self, token : str,lang: str):
+    def process_token(self, token : str):
         # return [token]
         # # token=re.sub(self.whitespace_re, "", token)
         # split_tokens=[token]
@@ -67,11 +67,11 @@ class BasicTokenProcessorSpanish(TokenProcessor):
         #     final_tokens.append(s)
         # print([self.normalize(token) for token in non_alphanumeric])
         # return non_alphanumeric
-        return [self.normalize(token,lang) for token in non_alphanumeric]
+        return [self.normalize(token) for token in non_alphanumeric]
     
-    def normalize(self,token: str,lang: str):
+    def normalize(self,token: str):
         # return self.Stemmer.ste
-        if lang=='es':
-            return self.spanish_stemmer.stem(token)
+        # if lang=='es':
+        #     return self.spanish_stemmer.stem(token)
         return self.Stemmer.stem(token)
         

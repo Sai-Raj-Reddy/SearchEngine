@@ -11,6 +11,9 @@ from querying import BooleanQueryParser
 from langdetect import detect
 
 import pickle
+import struct
+
+
 
 
 
@@ -77,6 +80,32 @@ def index_corpus(corpus : DocumentCorpus) -> Index:
     # print("Index_docs ",doc_count)
 
     return PositionalInvertedIndex
+
+
+# def index_corpus_doc_length(corpus : DocumentCorpus) -> Index:
+#     token_processor = BasicTokenProcessor()
+#     PositionalInvertedIndex=positionalinvertedindex.PositionalInvertedIndex()
+#     doc_count=0
+#     test=1
+#     total_length=0
+#     with open('BinaryFiles/doclengths.bin', 'wb') as file:
+#         for d in corpus:
+#             if doc_count%1000==0:
+#                 print(test)
+#                 test+=1
+#             doc_length=0
+#             token_stream=englishtokenstream.EnglishTokenStream(d.get_content())
+#             for i in token_stream:
+#                 terms=token_processor.process_token(i)
+#                 doc_length+=len(terms)
+#             total_length+=doc_length
+#             doc_count+=1
+#             packed_data=struct.pack("i",doc_length)
+#             file.write(packed_data)
+#         print("total length ",total_length)
+#         print("doc_count ",doc_count)
+
+#     return PositionalInvertedIndex
 
 def serialize_index(index,d):
     # serialized_index = pickle.dumps(index)
@@ -186,6 +215,25 @@ def serialize_index(index,d):
 #         print("--- %s seconds for searching ---" % (time.time() - start_time))
 
 
+# # This is for calculating doc_lengths
+# if __name__ == "__main__":
+#     try:
+#         with open('BinaryFiles/not_imp/index_JSON_Positional_Index_doc_length.bin', 'rb') as file:
+#             serialized_index = file.read()
+#             index = pickle.loads(serialized_index)
+#         with open('BinaryFiles/not_imp/document_corpus_JSON_Positional_Index_doc_length.bin', 'rb') as file:
+#             serialized_index = file.read()
+#             d = pickle.loads(serialized_index)
+#         print("loaded from files")
+#     except FileNotFoundError:
+#         print("File Not Found")
+#         start_time = time.time()
+#         corpus_path = Path('TestingDocuments\JSON')
+#         d = DirectoryCorpus.load_json_directory(corpus_path, ".json")
+#         print("--- %s seconds for directory load  ---" % (time.time() - start_time))
+#         start_time = time.time()
+#         index = index_corpus_doc_length(d)
+#         print("--- %s seconds for index corpus ---" % (time.time() - start_time))
 
 # # This is for database search -working diskpositional index
 # if __name__ == "__main__":
@@ -234,7 +282,8 @@ if __name__ == "__main__":
             break
         else:
             # result=boolean_query.parse_query(query)
-            result=index.rank_documents(query)
+            # result=index.rank_documents(query)
+            result=index.rank_okapi(query)
             # result=result.get_postings(index)
             if result.qsize()==0:
                 print("The given text is not found in any documents")

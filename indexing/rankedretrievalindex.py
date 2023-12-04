@@ -20,9 +20,13 @@ class RankedRetrievalIndex(Index):
         self.cursor=self.conn.cursor()
         # self.p=basictokenprocessor_spanish.BasicTokenProcessorSpanish()
         self.p=basictokenprocessor.BasicTokenProcessor()
-        self.N=self.get_N()
-        # self.a_d_dict={}
+        # self.N=self.get_N()
         # print(self.N)
+        self.N=199059 # Hardcoded instead of making a db call everytime
+        self.totallength=14158434
+        self.doc_count=36803
+        self.avg_doc_length=self.totallength/self.doc_count
+        self.lengths_file='BinaryFiles\doclengths.bin'
         
     def get_N(self):
         self.cursor.execute(f"SELECT COUNT(*) FROM \"SearchEngine_Schema\".\"SearchIndex\"")
@@ -37,6 +41,77 @@ class RankedRetrievalIndex(Index):
             return -1
         for i in result:
             return i[0]
+        
+    def rank_okapi(self,query):
+        dict_a_d={}
+        q=PriorityQueue()
+        query=query.split(" ")
+        for i in query:
+            dict_a_d=self.get_postings_okapi(i,dict_a_d)
+        print(len(dict_a_d))
+        try:
+            for doc_id in dict_a_d:
+                # print(doc_id)
+                # l_d_file.seek(0)
+                # l_d_file.seek(doc_id*8)
+                # l_d=struct.unpack("d",l_d_file.read(8))[0]
+                a_d=dict_a_d[doc_id]/1
+                q.put((a_d*(-1),doc_id))
+            # print("doc_id ",doc_id," l_d ",l_d)
+        except Exception as e:
+            print("Exception occurred while reading l_d from doc weights file")
+            print(e)
+        return q
+
+
+    def get_postings_okapi(self,term,dict_a_d):
+        processed_term=self.p.process_token(term)[0]
+        term_position=self.get_term_position(processed_term)
+        if term_position==-1:
+            return dict_a_d
+        with open(self.path,'rb') as file:
+            try:
+                file.seek(term_position)
+            except Exception as e:
+                print("Exception occurred while seeking to the position of term in postings.bin file")
+                print(e)
+            dft=struct.unpack("i",file.read(4))[0] # checkif it's unpacking dft as expected and then loop for range in dft then cal doc_id from gap and then positions from positions gap
+            print("dft",dft,"term ",term)
+            # w_q_t=math.log(1+(self.N/dft))
+            w_q_t=max(0.1,math.log((self.N-dft+0.5)/(dft+0.5)))
+            postings=[]
+            prev_doc_id=0
+            with open(self.lengths_file,'rb') as length_file:
+                for _ in range(dft):
+                    doc_id_gap=struct.unpack("i",file.read(4))[0] #doc_id gap
+                    doc_id=prev_doc_id+doc_id_gap
+                    p=Posting(doc_id)
+                    prev_doc_id=doc_id
+                    tftd=struct.unpack("i",file.read(4))[0] # number of terms in this doc
+                    # print(tftd)
+                    length_file.seek(doc_id*4)
+                    doc_length=struct.unpack("i",length_file.read(4))[0]
+
+                    if tftd==0:
+                        continue
+                    w_d_t_num=(2.2)*(tftd)
+                    w_d_t_denum=(1.2)*(0.25+0.75*(doc_length/self.avg_doc_length))
+                    w_d_t=w_d_t_num/w_d_t_denum
+                    # w_d_t=1+math.log(tftd)
+                    if doc_id not in dict_a_d:
+                        dict_a_d[doc_id]=0
+                    dict_a_d[doc_id]+=w_d_t*w_q_t
+                    prev_position_id=0
+                    for m in range(tftd):
+                        position_id_gap=struct.unpack("i",file.read(4))[0] #position id gap
+                        position=prev_position_id+position_id_gap
+                        prev_position_id=position
+                        p.add_position(position)
+                    postings.append(p)
+            
+        file.close()
+        return dict_a_d
+
 
     def rank_documents(self,query):
         # a_d_values=[]

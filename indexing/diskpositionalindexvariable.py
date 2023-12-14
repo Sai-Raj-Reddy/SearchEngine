@@ -12,11 +12,11 @@ class DiskPositionalIndexVariable(Index):
     def __init__(self):
         self.path='BinaryFiles\disk_postings.bin'
 
-        self.conn = psycopg2.connect(database="postgres",
-                        host="127.0.0.1",
-                        user="postgres",
-                        password="Jinsakai@25",
-                        port="5432")
+        self.conn = psycopg2.connect(database="db",
+                        host="host",
+                        user="user",
+                        password="password",
+                        port="port")
         self.cursor=self.conn.cursor()
         # self.p=basictokenprocessor_spanish.BasicTokenProcessorSpanish()
         self.p=basictokenprocessor.BasicTokenProcessor()

@@ -10,19 +10,20 @@ from queue import PriorityQueue
 
 class RankedRetrievalIndex(Index):
     def __init__(self):
-        self.path='BinaryFiles\disk_postings.bin'
-        self.ad_path='BinaryFiles\docWeights_db.bin'
-        self.conn = psycopg2.connect(database="postgres",
-                        host="127.0.0.1",
-                        user="postgres",
-                        password="Jinsakai@25",
-                        port="5432")
+        self.path='BinaryFiles\disk_postings_db_final.bin'
+        self.ad_path='BinaryFiles\docWeights_Final.bin'
+        self.conn = psycopg2.connect(database="db",
+                        host="host",
+                        user="user",
+                        password="password",
+                        port="port")
         self.cursor=self.conn.cursor()
         # self.p=basictokenprocessor_spanish.BasicTokenProcessorSpanish()
         self.p=basictokenprocessor.BasicTokenProcessor()
         # self.N=self.get_N()
         # print(self.N)
-        self.N=199059 # Hardcoded instead of making a db call everytime
+        # self.N=199059 # Hardcoded instead of making a db call everytime
+        self.N=36803
         self.totallength=14158434
         self.doc_count=36803
         self.avg_doc_length=self.totallength/self.doc_count
@@ -95,7 +96,7 @@ class RankedRetrievalIndex(Index):
                     if tftd==0:
                         continue
                     w_d_t_num=(2.2)*(tftd)
-                    w_d_t_denum=(1.2)*(0.25+0.75*(doc_length/self.avg_doc_length))
+                    w_d_t_denum=(1.2)*(0.25+0.75*(doc_length/self.avg_doc_length))+tftd
                     w_d_t=w_d_t_num/w_d_t_denum
                     # w_d_t=1+math.log(tftd)
                     if doc_id not in dict_a_d:
@@ -128,6 +129,8 @@ class RankedRetrievalIndex(Index):
                     # l_d_file.seek(0)
                     l_d_file.seek(doc_id*8)
                     l_d=struct.unpack("d",l_d_file.read(8))[0]
+                    # print("doc name ",d.get_doc)
+                    print("Id : ",doc_id," L_d: ",l_d)
                     a_d=dict_a_d[doc_id]/l_d
                     q.put((a_d*(-1),doc_id))
                 # print("doc_id ",doc_id," l_d ",l_d)
@@ -172,6 +175,7 @@ class RankedRetrievalIndex(Index):
                 if tftd==0:
                     continue
                 w_d_t=1+math.log(tftd)
+                print("Id : ",doc_id," w_d_t : ",w_d_t," w_q_t : ",w_q_t)
                 if doc_id not in dict_a_d:
                     dict_a_d[doc_id]=0
                 dict_a_d[doc_id]+=w_d_t*w_q_t

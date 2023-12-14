@@ -116,9 +116,9 @@ def serialize_index(index,d):
     #     file.write(serialized_corpus)
     serialized_index = pickle.dumps(index)
     serialized_corpus=pickle.dumps(d)
-    with open('BinaryFiles/index_Ranked_less_docs.bin', 'wb') as file:
+    with open('BinaryFiles/index_JSON_Positional_Index_Final.bin', 'wb') as file:
         file.write(serialized_index)
-    with open('BinaryFiles/document_corpus_Ranked_less_docs.bin', 'wb') as file:
+    with open('BinaryFiles/document_corpus_JSON_Positional_Index_Final.bin', 'wb') as file:
         file.write(serialized_corpus)
 
 
@@ -140,10 +140,10 @@ def serialize_index(index,d):
 #         #     serialized_index = file.read()
 #         #     d = pickle.loads(serialized_index)
 #         # print("loaded from files")
-#         with open('BinaryFiles/index_JSON_Positional_Index.bin', 'rb') as file:
+#         with open('BinaryFiles/index_JSON_Positional_Index_Final.bin', 'rb') as file:
 #             serialized_index = file.read()
 #             index = pickle.loads(serialized_index)
-#         with open('BinaryFiles/document_corpus_JSON_Positional_Index.bin', 'rb') as file:
+#         with open('BinaryFiles/document_corpus_JSON_Positional_Index_Final.bin', 'rb') as file:
 #             serialized_index = file.read()
 #             d = pickle.loads(serialized_index)
 #         print("loaded from files")

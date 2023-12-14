@@ -4,14 +4,14 @@ import math
 class DiskIndexWriter():
     def writeIndex(self,index,corpus):
         queries_mapping=[]
-        conn = psycopg2.connect(database="postgres",
-                        host="127.0.0.1",
-                        user="postgres",
-                        password="Jinsakai@25",
-                        port="5432")
+        conn = psycopg2.connect(database="db",
+                        host="host",
+                        user="user",
+                        password="password",
+                        port="port")
         cursor=conn.cursor()
         l_d_dict={} # To calculate l_d length storing the doc_id as we encounter for each term in the index
-        with open('BinaryFiles/disk_postings_db.bin', 'wb') as file:
+        with open('BinaryFiles/disk_postings_db_final.bin', 'wb') as file:
             prev_docid=0
             for i in index:
                 l=[]
@@ -29,7 +29,7 @@ class DiskIndexWriter():
                     prev_position=0
                     if postings[j].doc_id not in l_d_dict: # if doc_id not already present in l_d dictionary then adding it
                         l_d_dict[postings[j].doc_id]=0
-                    l_d_dict[postings[j].doc_id]+=(tftd**2) # square of tftd
+                    l_d_dict[postings[j].doc_id]+=(1+math.log(tftd))**2 # square of tftd
                     k=0
                     while(k<tftd):
                         l.append(positions[k]-prev_position) # diff of prev position and current position
@@ -64,7 +64,7 @@ class DiskIndexWriter():
         # conn.commit()
         file.close()
         # cursor.close()
-        with open('BinaryFiles/docWeights.bin', 'wb') as file:
+        with open('BinaryFiles/docWeights_Final.bin', 'wb') as file:
             i=1
             doc_mapping=[]
             doc_mappingvalue=[]

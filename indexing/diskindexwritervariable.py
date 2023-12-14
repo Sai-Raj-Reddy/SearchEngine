@@ -23,11 +23,11 @@ class DiskIndexWriterVariable():
         #                 user=config.host,
         #                 password=config.password,
         #                 port=config.port
-        conn = psycopg2.connect(database="postgres",
-                        host="127.0.0.1",
-                        user="postgres",
-                        password="Jinsakai@25",
-                        port="5432")
+        conn = psycopg2.connect(database="db",
+                        host="host",
+                        user="user",
+                        password="password",
+                        port="port")
         cursor=conn.cursor()
         l_d_dict={} # To calculate l_d length storing the doc_id as we encounter for each term in the index
         with open('BinaryFiles/disk_postings_variable.bin', 'wb') as file:
